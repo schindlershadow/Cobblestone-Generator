@@ -44,19 +44,32 @@ local function drop()
     end
 end
 
---main loop
-while true do
-    -- Check if the inventory has free space
-    local free = false
-    --local chestSize = chest.size()
-    local chestInv = chest.list()
-    for i = 1, #chestInv, 1 do
-        if chestInv[i] ~= slotLimit then
-            free = true 
-            break 
+local function dropAll()
+    if not hopper then
+        for i = 1, 16, 1 do
+            local item = turtle.getItemDetail(i)
+            if type(item) ~= "nil" then
+                chest.pullItems(turtleName, i)
+            end
         end
     end
-    
+end
+
+-- main loop
+while true do
+    dropAll()
+    -- Check if the inventory has free space
+    local free = false
+    -- local chestSize = chest.size()
+    local chestInv = chest.list()
+    for i = 1, #chestInv, 1 do
+        if chestInv[i].count ~= slotLimit then
+            print(tostring(chestInv[i].count) .. "/" .. tostring(slotLimit))
+            free = true
+            break
+        end
+    end
+
     if free then
         if side ~= "front" then
             turtle.dig()
@@ -73,7 +86,7 @@ while true do
         drop()
     else
         -- no free space, wait for inv to empty
-        sleep(1)
+        sleep(10)
     end
 
 end
