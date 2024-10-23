@@ -63,12 +63,16 @@ while true do
     -- local chestSize = chest.size()
     if type(chest) ~= nil then
         local chestInv = chest.list()
-        for i = 1, #chestInv, 1 do
-            if chestInv[i].count ~= slotLimit then
-                print(tostring(chestInv[i].count) .. "/" .. tostring(slotLimit))
-                free = true
-                break
+        if #chestInv ~= 0 then
+            for i = 1, #chestInv, 1 do
+                if chestInv[i].count ~= slotLimit then
+                    print(tostring(chestInv[i].count) .. "/" .. tostring(slotLimit))
+                    free = true
+                    break
+                end
             end
+        else
+            free = true
         end
 
         if free then
