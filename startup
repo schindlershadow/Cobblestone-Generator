@@ -1,0 +1,79 @@
+-- If not using connected inventories, select a side of the turtle to drop items
+local side = "back"
+
+-- Do not change anything under this line 
+local chest = peripheral.find("inventory")
+local modem = peripheral.find("peripheral_hub")
+local hopper = false
+local turtleName = ""
+local slotLimit = 64
+
+if type(modem) == "nil" or type(chest) == "nil" then
+    print("No modem or connected inventory found, falling back to dropping items on side: " .. side)
+    hopper = true
+else
+    turtleName = modem.getNameLocal()
+    slotLimit = chest.getItemLimit(1)
+end
+
+local function drop()
+    if hopper then
+        if side == "front" then
+            turtle.drop()
+        elseif side == "top" then
+            turtle.dropUp()
+        elseif side == "bottom" then
+            turtle.dropDown()
+        elseif side == "back" then
+            turtle.turnLeft()
+            turtle.turnLeft()
+            turtle.drop()
+            turtle.turnLeft()
+            turtle.turnLeft()
+        elseif side == "left" then
+            turtle.turnLeft()
+            turtle.drop()
+            turtle.turnRight()
+        elseif side == "right" then
+            turtle.turnRight()
+            turtle.drop()
+            turtle.turnLeft()
+        end
+    else
+        chest.pullItems(turtleName, 1)
+    end
+end
+
+--main loop
+while true do
+    -- Check if the inventory has free space
+    local free = false
+    --local chestSize = chest.size()
+    local chestInv = chest.list()
+    for i = 1, #chestInv, 1 do
+        if chestInv[i] ~= slotLimit then
+            free = true 
+            break 
+        end
+    end
+    
+    if free then
+        if side ~= "front" then
+            turtle.dig()
+        end
+
+        if side ~= "down" then
+            turtle.digDown()
+        end
+
+        if side ~= "top" then
+            turtle.digUp()
+        end
+
+        drop()
+    else
+        -- no free space, wait for inv to empty
+        sleep(1)
+    end
+
+end
